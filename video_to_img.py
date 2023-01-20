@@ -2,7 +2,7 @@ import cv2
 import os 
 import sys
 import numpy as np
-from datetime import timedelta
+from datetime import time, timedelta
 
 # the purpose of this script is to extract frames from an mp4 video to img files for training 
 
@@ -11,7 +11,7 @@ from datetime import timedelta
 # https://www.thepythoncode.com/article/extract-frames-from-videos-in-python
 
 # number of frames saved per second of video
-SAVING_FRAMES_PER_SECOND = 1
+SAVING_FRAMES_PER_SECOND = 60
 
 def format_timedelta(td):
     # utility function to format timedelta objects
@@ -62,8 +62,8 @@ def main(video_file):
 
     # parse through video frames
     while(True): 
-        ret, frame = video.read() 
-
+        ret, frame = video.read()
+        
         # if current frame has been read
         if ret:
             frame_duration = currentframe / fps
@@ -75,13 +75,14 @@ def main(video_file):
                 break
 
             if frame_duration >= closest_duration:
-                # if closest frame time is less than equal to frame duration that we want, save the frame
-                frame_duration_formatted = format_timedelta(timedelta(seconds=frame_duration))
-
+                # if closest frame time is less than equal to frame duration that we want, save the frame 
+                saveFrame = timedelta(seconds=frame_duration)
                 # write each frame as 'img*' where * is frame no.
-                name = './data/images/img' + str(frame_duration_formatted) + '.jpg'
-                print ('Captured...' + name) 
-                cv2.imwrite(name, frame) 
+                # name = './data/images/img' + str(int(saveFrame.seconds)) + '.jpg'
+                if(currentframe % 2 != 0 and currentframe % 3 == 0):
+                    name = './data/images/img' + str(int(currentframe)) + '.jpg'
+                    print ('Captured...' + name)
+                    cv2.imwrite(name, frame)
             currentframe += 1
         else:
             break
